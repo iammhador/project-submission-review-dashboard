@@ -2,8 +2,9 @@
 
 A full-stack dashboard where students submit projects and mentors review them.
 
-> **Status:** project scaffold only. Authentication, the submission portal, and the
-> review dashboard are being implemented in the following commits.
+> **Status:** database schema and JWT authentication are implemented. The student
+> submission portal and mentor review dashboard are being implemented in the
+> following commits.
 
 ## Stack
 
@@ -56,6 +57,30 @@ pnpm dev
 
 Health check: <http://localhost:4000/health>
 
+## Authentication
+
+Passwords are hashed with bcrypt and sessions use a signed JWT (HS256, via
+`jose`). The API accepts the token from the `awi_token` httpOnly cookie or an
+`Authorization: Bearer <token>` header.
+
+| Method | Endpoint           | Access | Description                          |
+| ------ | ------------------ | ------ | ------------------------------------ |
+| POST   | `/api/auth/signup` | Public | Create a student account             |
+| POST   | `/api/auth/login`  | Public | Sign in and receive a session cookie |
+| POST   | `/api/auth/logout` | Public | Clear the session cookie             |
+| GET    | `/api/auth/me`     | Auth   | Return the current user              |
+
+Signup always creates a `STUDENT`; mentor accounts are provisioned by the seed.
+After starting the database and applying migrations, create the mentor account:
+
+```bash
+pnpm db:seed
+```
+
+The seed reads `SEED_MENTOR_NAME`, `SEED_MENTOR_EMAIL`, and
+`SEED_MENTOR_PASSWORD` (see `apps/api/.env.example`) and defaults to
+`mentor@awi.dev` / `mentor-password-123`. Change that password before deploying.
+
 ## Scripts
 
 | Command            | Description                                  |
@@ -70,12 +95,13 @@ Health check: <http://localhost:4000/health>
 | `pnpm db:down`     | Stop PostgreSQL                              |
 | `pnpm db:generate` | Generate the Prisma client                   |
 | `pnpm db:migrate`  | Create/apply a development migration         |
+| `pnpm db:seed`     | Seed the mentor account                      |
 | `pnpm db:studio`   | Open Prisma Studio                           |
 
 ## Roadmap
 
-- [ ] Database schema, migrations, and seeded mentor account
-- [ ] JWT authentication (signup, login, guards)
+- [x] Database schema, migrations, and seeded mentor account
+- [x] JWT authentication (signup, login, guards)
 - [ ] Student submission portal with validation, duplicate checks, and rate limiting
 - [ ] Mentor dashboard with server-side pagination, filters, actions, and statistics
 - [ ] Tests and deployment notes

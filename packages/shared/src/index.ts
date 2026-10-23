@@ -1,6 +1,7 @@
 /**
  * Shared domain vocabulary used by both the web and API apps.
- * Validation schemas and DTOs will live here as features are implemented.
+ * Validation schemas stay in the API; this package carries the contract
+ * (enums, DTOs and pagination shapes) that both sides compile against.
  */
 
 export const ROLES = {
@@ -18,3 +19,59 @@ export const SUBMISSION_STATUSES = {
 
 export type SubmissionStatus =
   (typeof SUBMISSION_STATUSES)[keyof typeof SUBMISSION_STATUSES];
+
+export const DEFAULT_PAGE_SIZE = 10;
+export const MAX_PAGE_SIZE = 50;
+
+export interface UserSummary {
+  id: string;
+  name: string;
+  email: string;
+  role: Role;
+}
+
+export interface SubmissionAuthor {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface SubmissionReviewer {
+  id: string;
+  name: string;
+}
+
+export interface Submission {
+  id: string;
+  title: string;
+  description: string;
+  repoUrl: string;
+  liveUrl: string | null;
+  status: SubmissionStatus;
+  reviewNote: string | null;
+  reviewedAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+  student: SubmissionAuthor;
+  mentor: SubmissionReviewer | null;
+}
+
+export interface Paginated<T> {
+  items: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
+export interface SubmissionStats {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+}
+
+export interface AuthResponse {
+  user: UserSummary;
+  token: string;
+}

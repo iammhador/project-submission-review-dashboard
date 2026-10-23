@@ -7,5 +7,55 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Domain models (User, ProjectSubmission) and migrations will be added
-// in the next step, together with auth and the submission workflow.
+enum Role {
+  STUDENT
+  MENTOR
+}
+
+enum SubmissionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(STUDENT)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  submissions ProjectSubmission[] @relation("SubmittedBy")
+  reviews     ProjectSubmission[] @relation("ReviewedBy")
+
+  @@index([role])
+}
+
+model ProjectSubmission {
+  id          String           @id @default(cuid())
+  title       String
+  description String
+  repoUrl     String
+  liveUrl     String?
+  status      SubmissionStatus @default(PENDING)
+
+  studentId String
+  student   User   @relation("SubmittedBy", fields: [studentId], references: [id], onDelete: Cascade)
+
+  mentorId String?
+  mentor   User?   @relation("ReviewedBy", fields: [mentorId], references: [id], onDelete: SetNull)
+
+  reviewNote String?
+  reviewedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // One student cannot submit the same repository twice.
+  @@unique([studentId, repoUrl])
+  @@index([studentId, createdAt])
+  @@index([status, createdAt])
+  @@index([mentorId])
+}
