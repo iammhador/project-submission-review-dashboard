@@ -20,6 +20,14 @@ export const SUBMISSION_STATUSES = {
 export type SubmissionStatus =
   (typeof SUBMISSION_STATUSES)[keyof typeof SUBMISSION_STATUSES];
 
+export const REVIEW_DECISIONS = {
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+} as const;
+
+export type ReviewDecision =
+  (typeof REVIEW_DECISIONS)[keyof typeof REVIEW_DECISIONS];
+
 export const DEFAULT_PAGE_SIZE = 10;
 export const MAX_PAGE_SIZE = 50;
 
@@ -41,6 +49,14 @@ export interface SubmissionReviewer {
   name: string;
 }
 
+export interface SubmissionReview {
+  id: string;
+  decision: ReviewDecision;
+  note: string | null;
+  reviewedAt: string;
+  reviewer: SubmissionReviewer;
+}
+
 export interface Submission {
   id: string;
   title: string;
@@ -48,12 +64,10 @@ export interface Submission {
   repoUrl: string;
   liveUrl: string | null;
   status: SubmissionStatus;
-  reviewNote: string | null;
-  reviewedAt: string | null;
   createdAt: string;
   updatedAt: string;
   student: SubmissionAuthor;
-  mentor: SubmissionReviewer | null;
+  review: SubmissionReview | null;
 }
 
 export interface Paginated<T> {
