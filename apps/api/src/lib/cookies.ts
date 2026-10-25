@@ -1,8 +1,10 @@
 import type { CookieOptions, Request, Response } from "express";
 
+import { AUTH_COOKIE_NAME } from "@awi/shared";
+
 import { env } from "../env.js";
 
-export const AUTH_COOKIE = "awi_token";
+export const AUTH_COOKIE = AUTH_COOKIE_NAME;
 
 const UNIT_SECONDS: Record<string, number> = {
   s: 1,

@@ -1,13 +1,13 @@
 import { Router } from "express";
 
-import type { AuthResponse } from "@awi/shared";
+import type { AuthResponse, UserSummary } from "@awi/shared";
 
 import { clearAuthCookie, setAuthCookie } from "../../lib/cookies.js";
 import { parse } from "../../lib/validation.js";
-import { requireAuth } from "../../middleware/auth.js";
+import { currentUser, requireAuth } from "../../middleware/auth.js";
 import { rateLimit } from "../../middleware/rate-limit.js";
 import { loginSchema, signupSchema } from "./auth.schemas.js";
-import { login, signup } from "./auth.service.js";
+import { getUser, login, signup } from "./auth.service.js";
 
 export const authRouter = Router();
 
@@ -44,6 +44,8 @@ authRouter.post("/logout", (_req, res) => {
   res.status(204).end();
 });
 
-authRouter.get("/me", requireAuth, (req, res) => {
-  res.status(200).json({ user: req.user });
+authRouter.get("/me", requireAuth, async (req, res) => {
+  const user = await getUser(currentUser(req).id);
+
+  res.status(200).json({ user } satisfies { user: UserSummary });
 });

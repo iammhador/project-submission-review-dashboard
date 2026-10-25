@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-import type { AuthResponse } from "@awi/shared";
+import type { AuthResponse, UserSummary } from "@awi/shared";
 
 import { conflict, unauthorized } from "../../lib/http-error.js";
 import { signToken } from "../../lib/jwt.js";
@@ -71,4 +71,16 @@ export async function login(input: LoginInput): Promise<AuthResponse> {
   });
 
   return { user, token };
+}
+
+/** Loads the profile behind a verified token; fails if the account was removed. */
+export async function getUser(id: string): Promise<UserSummary> {
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: userSelect,
+  });
+  if (!user) {
+    throw unauthorized("Your account no longer exists. Please sign in again.");
+  }
+  return user;
 }

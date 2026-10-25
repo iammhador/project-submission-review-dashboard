@@ -28,6 +28,9 @@ export const REVIEW_DECISIONS = {
 export type ReviewDecision =
   (typeof REVIEW_DECISIONS)[keyof typeof REVIEW_DECISIONS];
 
+/** Name of the httpOnly cookie that carries the session JWT. */
+export const AUTH_COOKIE_NAME = "awi_token";
+
 export const DEFAULT_PAGE_SIZE = 10;
 export const MAX_PAGE_SIZE = 50;
 
