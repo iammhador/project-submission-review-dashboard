@@ -13,6 +13,7 @@
     "build": "pnpm -r build",
     "lint": "pnpm -r --if-present lint",
     "typecheck": "pnpm -r --if-present typecheck",
+    "test": "pnpm --filter @awi/shared build && pnpm -r --if-present test",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down",
     "db:logs": "docker compose logs -f postgres",

@@ -3,6 +3,9 @@ import express from "express";
 import helmet from "helmet";
 
 import { env } from "./env.js";
+import { errorHandler, notFoundHandler } from "./middleware/error-handler.js";
+import { authRouter } from "./modules/auth/auth.routes.js";
+import { submissionsRouter } from "./modules/submissions/submissions.routes.js";
 
 export function createApp() {
   const app = express();
@@ -20,9 +23,11 @@ export function createApp() {
     });
   });
 
-  app.use((_req, res) => {
-    res.status(404).json({ error: "Not found" });
-  });
+  app.use("/api/auth", authRouter);
+  app.use("/api/submissions", submissionsRouter);
+
+  app.use(notFoundHandler);
+  app.use(errorHandler);
 
   return app;
 }
